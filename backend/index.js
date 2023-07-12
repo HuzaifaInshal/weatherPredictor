@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { spawn } = require('child_process');
-
+const path = require('path')
 
 const app = express();
 
@@ -13,7 +13,6 @@ app.use(express.urlencoded({ extended: false }));
 app.get('/predict/:model_number/:a/:b/:c/:d/:e/:f/:g/:h', (req, res) => {
   const { model_number, a, b, c, d, e, f, g, h } = req.params;
 
-//   const childPython = spawn( model_number, a, b, c, d, e, f, g, h);
 const childPython = spawn('python',['run.py',model_number, a, b, c, d, e, f, g, h ]);
 
   childPython.stdout.on('data',(data) => {
@@ -29,6 +28,10 @@ const childPython = spawn('python',['run.py',model_number, a, b, c, d, e, f, g, 
   })
 
 });
+
+app.use(express.static(path.join(__dirname,'../frontend/build/')))
+app.get('*',(req,res)=>res.sendFile(path.resolve(__dirname,'../','frontend','build','index.html')))
+
 
 app.listen(4000, () => console.log('Server is listening at port 4000'));
 
